@@ -106,7 +106,6 @@ def WordFormat_html(info):
         has_desc = not info.desc is None
         classname = 'has_desc' if has_desc else ''
         if has_desc:
-            print(f"\n\n{info.desc}\n{info.desc[0]} {type(info.desc[0])}\n")
             desc = [f"({__WordFormat_BookAliasAndRef_html(d['book_alias'], d['ref'])}) {d['desc']}" for d in info.desc]
             descs = "\n".join([f"<li>{d}</li>" for d in desc])
             title = f"<li><details><summary>{info.disp} ({', '.join(refs)})</summary><ul>{descs}</ul></details></li>"
