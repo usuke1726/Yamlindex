@@ -1,7 +1,7 @@
 
 from lib.TeXMacro import HTML_DefaultTeXMacros_forHelp
 
-HELP_VERSION = "Yamlindex v1.0"
+HELP_VERSION = "Yamlindex v1.1"
 
 HELP_DESCRIPTION = f"""
 =====================================
