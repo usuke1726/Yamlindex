@@ -14,7 +14,7 @@ from lib.Lang import Lang, DEFAULT_LANG
 from lib.Book import Book, BookHeaderError
 from lib.Word import Word
 from lib.Sort import MakeSortedFile
-from lib.YamlToDict import YamlToDict
+from lib.YamlToDict import YamlToDictList, YamlLoadError
 from lib.TeXMacro import ReadMacro
 from lib.Header import PrintTopHeader, PrintBookHeader, PrintFooter, HeadChar
 from lib.Help import HELP_DESCRIPTION, HELP_EPILOG, HELP_VERSION
@@ -78,20 +78,32 @@ with Progress(filenum, "yamlload") as prog:
         try:
             filename = yamlfiles[i]
             Log(f"** Yamlfile ** {filename} {i+1}/{filenum}:")
-            data = YamlToDict(filename)
-            header = Book.ExtractHeader_FromDict(data)
-            book = Book(header)
-            books.append(book)
-            ReadDict(data, book.alias)
-            anything_suceeded = True
-        except WordDataError as e:
-            Log(f"Yamlファイル読み込み失敗\n{e}\n")
-        except BookHeaderError as e:
-            Log(f"ヘッダーエラー\n{e}")
-        except Exception as e:
-            Log(f"エラー\n{e}\n")
-        finally:
+            data = YamlToDictList(filename)
+        except YamlLoadError as e:
+            Log(f"Yamlファイルロード失敗 文法に誤りがある可能性があります")
             prog.step()
+            continue
+        book_num = len(data)
+        if book_num == 0:
+            Log("文献がありません")
+            continue
+        with Progress(book_num, "yamlload-onebook") as prog2:
+            for d in data:
+                try:
+                    header = Book.ExtractHeader_FromDict(d)
+                    book = Book(header)
+                    books.append(book)
+                    ReadDict(d, book.alias)
+                    anything_suceeded = True
+                except WordDataError as e:
+                    Log(f"Yamlファイル読み込み失敗\n{e}\n")
+                except BookHeaderError as e:
+                    Log(f"ヘッダーエラー\n{e}")
+                except Exception as e:
+                    Log(f"エラー\n{e}\n")
+                finally:
+                    prog2.step()
+        prog.step()
 
 if not anything_suceeded:
     Log(f"どのYamlファイルも読み込みに失敗したので終了します")
