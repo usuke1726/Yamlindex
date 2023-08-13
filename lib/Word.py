@@ -20,7 +20,11 @@ class Word:
         if desc is None:
             self.description = None
         else:
-            self.description = [f"({book_alias}) {str(d)}" for d in desc]
+            self.description = [json.dumps({
+                'desc': str(d),
+                'book_alias': book_alias,
+                'ref': ref
+            }) for d in desc]
         self.book_aliases = [book_alias]
     def head(self):
         return self.compare_word[0]
@@ -56,6 +60,17 @@ class Word:
                 return [e(a, onlyInlineMath = onlyInlineMath) for a in v]
             else:
                 return None
+        def escape_description(desc):
+            if desc is None:
+                return None
+            return [
+                {
+                    'desc': e(d['desc'], onlyInlineMath = False),
+                    'book_alias': e(d['book_alias']),
+                    'ref': e(d['ref'])
+                }
+                for d in [json.loads(d) for d in desc]
+            ]
         class Info:
             def __init__(self, disp, aliases, book_aliases, ref, desc):
                 self.disp = disp
@@ -68,7 +83,7 @@ class Word:
             e(self.aliases),
             e(self.book_aliases),
             e(self.ref),
-            e(self.description, onlyInlineMath = False)
+            escape_description(self.description)
         )
         return WordFormat(lang)(info)
     def __eq__(self, other):

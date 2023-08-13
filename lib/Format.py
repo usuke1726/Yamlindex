@@ -79,24 +79,36 @@ def BookFormat(lang: str = DEFAULT_LANG):
     }
     return funcs[Lang.from_str(lang, raiseError = True)]
 
+
+def __WordFormat_BookAliasAndRef_markdown(alias: str, ref: list):
+    refs = '/'.join(ref)
+    return f"{alias}\\[{refs}\\]"
+
 def WordFormat_markdown(info):
     if info.aliases is None:
-        refs = [f"{info.book_aliases[i]}\\[{'/'.join(info.ref[i])}\\]" for i in range(len(info.book_aliases))]
+        refs = [__WordFormat_BookAliasAndRef_markdown(info.book_aliases[i], info.ref[i]) for i in range(len(info.book_aliases))]
         title = f"- {info.disp} ({', '.join(refs)})"
         if not info.desc is None:
-            descs = "\n".join([f"\t- {d}" for d in info.desc])
+            desc = [f"({__WordFormat_BookAliasAndRef_markdown(d['book_alias'], d['ref'])}) {d['desc']}" for d in info.desc]
+            descs = "\n".join([f"\t- {d}" for d in desc])
             title += f"\n{descs}"
     else:
         title = f"- {info.disp} -> {', '.join(info.aliases)}"
     return title
 
+def __WordFormat_BookAliasAndRef_html(alias: str, ref: list):
+    refs = '/'.join(ref)
+    return f"{alias}[{refs}]"
+
 def WordFormat_html(info):
     if info.aliases is None:
-        refs = [f"{info.book_aliases[i]}[{'/'.join(info.ref[i])}]" for i in range(len(info.book_aliases))]
+        refs = [__WordFormat_BookAliasAndRef_html(info.book_aliases[i], info.ref[i]) for i in range(len(info.book_aliases))]
         has_desc = not info.desc is None
         classname = 'has_desc' if has_desc else ''
         if has_desc:
-            descs = "\n".join([f"<li>{d}</li>" for d in info.desc])
+            print(f"\n\n{info.desc}\n{info.desc[0]} {type(info.desc[0])}\n")
+            desc = [f"({__WordFormat_BookAliasAndRef_html(d['book_alias'], d['ref'])}) {d['desc']}" for d in info.desc]
+            descs = "\n".join([f"<li>{d}</li>" for d in desc])
             title = f"<li><details><summary>{info.disp} ({', '.join(refs)})</summary><ul>{descs}</ul></details></li>"
         else:
             title = f"<li>{info.disp} ({', '.join(refs)})</li>"
