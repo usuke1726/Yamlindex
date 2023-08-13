@@ -9,6 +9,8 @@ def MakeSortedFile():
     tmpfiles = TmpFiles.file_pathes
     filenum = len(tmpfiles)
     length = 0
+    if filenum == 0:
+        return None, 0
     # 分割して書き込んだファイルをそれぞれソート
     with Progress(filenum, "各ファイルをソート") as prog:
         for i in range(len(tmpfiles)):

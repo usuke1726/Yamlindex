@@ -114,15 +114,18 @@ sorted_filename, linenum = MakeSortedFile()
 # ソートしたファイルを読み込んでフォーマットして最終ファイルに出力
 booknum = len(books)
 with Progress(linenum + booknum, "output") as prog, \
-     open(sorted_filename, 'r') as sorted_file, \
      GetOutputFile(outfilename, is_stdout) as outfile:
     PrintTopHeader(outfile, lang = out_ext)
-    for row in sorted_file.readlines():
-        word = Word.from_str(row)
-        HeadChar.apply(outfile, word, out_ext)
-        out = word.format(lang = out_ext) + "\n"
-        outfile.write(out)
-        prog.step()
+    if linenum > 0:
+        with open(sorted_filename, 'r') as sorted_file:
+            for row in sorted_file.readlines():
+                word = Word.from_str(row)
+                HeadChar.apply(outfile, word, out_ext)
+                out = word.format(lang = out_ext) + "\n"
+                outfile.write(out)
+                prog.step()
+    else:
+        Log("索引語が1つも追加されませんでした\n文献の情報だけを出力します")
     PrintBookHeader(outfile, lang = out_ext)
     for book in books:
         out = book.format(lang = out_ext) + "\n"
