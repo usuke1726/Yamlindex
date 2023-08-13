@@ -13,7 +13,9 @@ def BookFormat_markdown(info):
         title = f"{info.author}, {title}"
     if not info.publisher is None:
         title = f"{title}, {info.publisher}"
-    title = f"- ({info.alias}): {title}, {info.year}"
+    title = f"- ({info.alias}): {title}"
+    if not info.year is None:
+        title += f", {info.year}"
     added = []
     if not info.path is None:
         added.append(f"\n\t- パス: {info.path}")
@@ -48,7 +50,9 @@ def BookFormat_html(info):
         title = f"{info.author}, {title}"
     if not info.publisher is None:
         title = f"{title}, {info.publisher}"
-    title = f"({info.alias}): {title}, {info.year}"
+    title = f"({info.alias}): {title}"
+    if not info.year is None:
+        title += f", {info.year}"
     added = []
     if not info.path is None:
         added.append(f"\n\t<li>パス: {info.path}</li>")

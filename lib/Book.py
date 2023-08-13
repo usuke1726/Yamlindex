@@ -9,7 +9,6 @@ class BookHeaderError(Exception):
 
 # 論文・書籍等の文献データ
 class Book:
-    __Unknown = "作成年不明"
     __Types = {"note", "paper", "slide", "book", "other"}
     __Keys = {"type", "title", "related", "alias", "description", "year", "author", "publisher", "ISBN", "DOI", "URL", "last_accessed", "path"}
     __Keys_Required = {"title", "alias"}
@@ -25,8 +24,8 @@ class Book:
             else:
                 v = str(val)
             setattr(self, key, v)
-        if self.year is None or self.year.lower() in {"unknown", "不明"}:
-            self.year = Book.__Unknown
+        if not self.year is None and self.year.lower() in {"unknown", "不明"}:
+            self.year = "作成年不明"
         self.__validate_valuetypes()
         Book.__Assert_IsValidType(self.type)
         self.type = BookType.from_str(self.type)
