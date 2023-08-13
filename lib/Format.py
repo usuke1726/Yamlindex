@@ -7,7 +7,7 @@ def BookFormat_markdown(info):
     if info.URL is None:
         title = info.title
     else:
-        title = f"![{info.title}]({info.URL})"
+        title = f"[{info.title}]({info.URL})"
     title = f"“{title}”"
     if not info.author is None:
         title = f"{info.author}, {title}"
