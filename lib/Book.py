@@ -26,6 +26,8 @@ class Book:
             setattr(self, key, v)
         if not self.year is None and self.year.lower() in {"unknown", "不明"}:
             self.year = "作成年不明"
+        if not self.author is None and self.author.lower() in {"unknown", "不明"}:
+            self.author = "著者不明"
         self.__validate_valuetypes()
         Book.__Assert_IsValidType(self.type)
         self.type = BookType.from_str(self.type)
