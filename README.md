@@ -59,6 +59,7 @@
 |`DOI`|`str`|文献のDOI|
 |`URL`|`str`|URL|
 |`last_accessed`|`str`\|`int`|最終アクセス日時|
+|`path`|`str`|ファイルパス|
 
 ### 索引語
 

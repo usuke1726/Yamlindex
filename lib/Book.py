@@ -11,7 +11,7 @@ class BookHeaderError(Exception):
 class Book:
     __Unknown = "作成年不明"
     __Types = {"note", "paper", "slide", "book", "other"}
-    __Keys = {"type", "title", "related", "alias", "description", "year", "author", "publisher", "ISBN", "DOI", "URL", "last_accessed"}
+    __Keys = {"type", "title", "related", "alias", "description", "year", "author", "publisher", "ISBN", "DOI", "URL", "last_accessed", "path"}
     __Keys_Required = {"title", "alias"}
 
     def __init__(self, header: dict):

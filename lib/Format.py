@@ -15,6 +15,8 @@ def BookFormat_markdown(info):
         title = f"{title}, {info.publisher}"
     title = f"- ({info.alias}): {title}, {info.year}"
     added = []
+    if not info.path is None:
+        added.append(f"\n\t- パス: {info.path}")
     if not info.description is None:
         if type(info.description) == list:
             descs = "\n".join([f"\t- {d}" for d in info.description])
@@ -48,6 +50,8 @@ def BookFormat_html(info):
         title = f"{title}, {info.publisher}"
     title = f"({info.alias}): {title}, {info.year}"
     added = []
+    if not info.path is None:
+        added.append(f"\n\t<li>パス: {info.path}</li>")
     if not info.description is None:
         if type(info.description) == list:
             descs = "\n".join([f"\t<li>{d}</li>" for d in info.description])

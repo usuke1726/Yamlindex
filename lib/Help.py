@@ -35,6 +35,7 @@ YAMLファイルで作成した索引語データを統合し，五十音順に�
 - DOI: 論文のDOI (typeがpapersのときのみ有効)
 - URL: 文献のURL
 - last_accessed: 最終アクセス日時
+- path: ファイルパス
 
 2) ファイル情報について
 
