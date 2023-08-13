@@ -19,7 +19,11 @@ def __DictNum(data):
 
 # Yamlファイルを読んで索引語データを逐次出力していく
 def ReadDict(data: dict, book_alias: str):
-    with Progress(__DictNum(data), f"ReadDict: {book_alias}") as prog:
+    n = __DictNum(data)
+    if n == 0:
+        Log("索引語が1つもありません")
+        return
+    with Progress(n, f"ReadDict: {book_alias}") as prog:
         __ReadDict_proc(prog, data, book_alias, [])
 
 def __ReadDict_proc(prog, data: dict, book_alias: str, ref: list):
