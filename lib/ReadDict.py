@@ -21,7 +21,7 @@ def __DictNum(data):
 def ReadDict(data: dict, book_alias: str):
     n = __DictNum(data)
     if n == 0:
-        Log("索引語が1つもありません")
+        Log(f"索引語が1つもありません ({book_alias})")
         return
     with Progress(n, f"ReadDict: {book_alias}") as prog:
         __ReadDict_proc(prog, data, book_alias, [])
@@ -33,6 +33,8 @@ def __ReadDict_proc(prog, data: dict, book_alias: str, ref: list):
         if type(v) == dict:
             __ReadDict_proc(prog, v, book_alias, new_ref)
         elif type(v) == list:
+            if len(v) == 0:
+                Log(f"索引語が指定されていません: {k} ({book_alias}[{'/'.join(ref)}])")
             for row in v:
                 try:
                     if type(row) == dict:
@@ -41,11 +43,11 @@ def __ReadDict_proc(prog, data: dict, book_alias: str, ref: list):
                         __AppendWord(row, book_alias, new_ref)
                         prog.step()
                 except WordDataError as e:
-                    Log(f"Word error at {row}\n{e}\n")
+                    Log(f"Word error at {row}: {e}")
         elif v is None:
-            Log(f"索引語が指定されていません: {k} ({book_alias}[{'/'.join(ref)}])\n")
+            Log(f"索引語が指定されていません: {k} ({book_alias}[{'/'.join(ref)}])")
         else:
-            Log(f"型が辞書型でもリストでもありません: {v} {type(v)} ({book_alias}[{'/'.join(ref)}])\n")
+            Log(f"型が辞書型でもリストでもありません: {v} {type(v)} ({book_alias}[{'/'.join(ref)}])")
 
 def __AppendWord(row, book_alias: str, ref: list):
     if type(row) == str:
@@ -57,14 +59,14 @@ def __AppendWord(row, book_alias: str, ref: list):
 
 def __AppendWord_str(s: str, book_alias: str, ref: list):
     if len(s.strip()) == 0:
-        raise WordDataError(f"空の文字列です")
+        raise WordDataError(f"空の文字列です ({book_alias}[{'/'.join(ref)}])")
     word = Word(ToHiragana(s), s, None, ref, None, book_alias)
     TmpFiles.write(word)
 
 def __AppendWord_list(l: list, book_alias: str, ref: list):
     n = len(l)
     if n == 0:
-        raise WordDataError("空のリストです")
+        raise WordDataError(f"空のリストです ({book_alias}[{'/'.join(ref)}])")
     comp, disp = __DefParts(l[0])
     if n >= 3:
         desc = l[2]
@@ -88,7 +90,7 @@ def __DefParts(d):
         return ToHiragana(d), d
     elif type(d) == list:
         if len(d) == 0:
-            raise WordDataError("空のリストです")
+            raise WordDataError("索引語の定義が空のリストです")
         disp = d[0].strip()
         comp = (ToHiragana(disp) if len(d) == 1 else d[1]).strip()
         if disp == '':
@@ -110,5 +112,5 @@ def __AppendAliases(orig_disp, aliases, book_alias: str, ref: list):
             word = Word(comp, disp, orig_disp, ref, None, book_alias)
             TmpFiles.write(word)
         except WordDataError as e:
-            Log(f"エイリアス {alias} でのエラー\n{str(e)}\n")
+            Log(f"エイリアス {alias} でのエラー {str(e)}")
 
