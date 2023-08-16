@@ -54,7 +54,7 @@ class Book:
         info = Info(self)
         return BookFormat(lang)(info)
     def __validate_valuetypes(self):
-        keys_withTypeList = {"description", "related"}
+        keys_withTypeList = {"description", "related", "path"}
         for key in Book.__Keys:
             val = getattr(self, key)
             if val is None:
