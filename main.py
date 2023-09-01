@@ -24,7 +24,7 @@ formatter_class=argparse.RawTextHelpFormatter, # \nや\tを反映させる
 description = HELP_DESCRIPTION,
 epilog = HELP_EPILOG
 )
-parser.add_argument('-d', '--dir', nargs = "+", type = str, help = "YAMLファイルが格納されているフォルダのパス\n\tスペース区切りで複数指定可\n\t未指定可(カレントディレクトリになる)", default = ["."])
+parser.add_argument('-d', '--dir', nargs = "+", type = str, help = "YAMLファイルが格納されているフォルダのパス\n\tスペース区切りで複数指定可\n\t未指定可(カレントディレクトリになる)\n\tファイルも指定可能(末尾を .yml または .yaml にする)", default = ["."])
 default_filename = f"./out.{DEFAULT_LANG}"
 parser.add_argument('-o', '--output', type = str, help = f"出力ファイルパス\n\t拡張子も含む\n\t未指定可(デフォルトは {default_filename} )", default = default_filename)
 parser.add_argument('-r', '--recurse', action = "store_true", help = "--dirで指定したフォルダのサブフォルダからも再帰的にYAMLファイルを探す")

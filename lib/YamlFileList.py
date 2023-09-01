@@ -4,7 +4,9 @@ from glob import glob
 from lib.Log import Log
 
 def __GetYamlFiles_FromOneDir(directory: str, recurse: bool):
-    if not path.isdir(directory):
+    if directory.endswith('.yml') or directory.endswith('.yaml'):
+        return [path.abspath(f) for f in glob(directory) if path.isfile(f)]
+    elif not path.isdir(directory):
         Log(f"ディレクトリ {directory} が見つかりません")
         return []
     if recurse:
