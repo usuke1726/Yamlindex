@@ -20,5 +20,5 @@ def GetYamlFiles(directories: list, recurse: bool):
     if len(out) == 0:
         Log(f"Yamlファイルが1つも見つからないので終了します")
         exit(2)
-    return out
+    return list(set(out))
 
