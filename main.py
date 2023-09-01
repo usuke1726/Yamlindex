@@ -25,6 +25,7 @@ description = HELP_DESCRIPTION,
 epilog = HELP_EPILOG
 )
 parser.add_argument('-d', '--dir', nargs = "+", type = str, help = "YAMLファイルが格納されているフォルダのパス\n\tスペース区切りで複数指定可\n\t未指定可(カレントディレクトリになる)\n\tファイルも指定可能(末尾を .yml または .yaml にする)", default = ["."])
+parser.add_argument('-x', '--exclude', nargs = "+", type = str, help = "除外するYAMLファイルのパス\n\tスペース区切りで複数指定可\n\t未指定可", default = [])
 default_filename = f"./out.{DEFAULT_LANG}"
 parser.add_argument('-o', '--output', type = str, help = f"出力ファイルパス\n\t拡張子も含む\n\t未指定可(デフォルトは {default_filename} )", default = default_filename)
 parser.add_argument('-r', '--recurse', action = "store_true", help = "--dirで指定したフォルダのサブフォルダからも再帰的にYAMLファイルを探す")
@@ -46,7 +47,7 @@ elif not args.hiragana is None:
     print(f"{args.hiragana} -> {ToHiragana(args.hiragana)}")
     exit(0)
 
-yamlfiles = GetYamlFiles(args.dir, args.recurse)
+yamlfiles = GetYamlFiles(args.dir, args.recurse, args.exclude)
 Log(f"Yamlファイル: {yamlfiles}")
 
 if not args.macro is None:
