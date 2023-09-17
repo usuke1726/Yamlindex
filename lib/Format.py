@@ -83,10 +83,11 @@ def BookFormat_html(info):
         added.append(f"\n\t<li>DOI: {info.DOI}</li>")
     if info.type == BookType.website and not info.last_accessed is None:
         added.append(f"\n\t<li>最終アクセス: {info.last_accessed}</li>")
+    attributes = f"id='{info.id}'"
     if len(added) > 0:
-        return f"<li>{title}\n\t<ul>{''.join(added)}\n\t</ul></li>"
+        return f"<li {attributes}>{title}\n\t<ul>{''.join(added)}\n\t</ul></li>"
     else:
-        return f"<li>{title}</li>"
+        return f"<li {attributes}>{title}</li>"
 
 def BookFormat(lang: str = DEFAULT_LANG):
     funcs = {

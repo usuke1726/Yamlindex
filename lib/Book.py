@@ -1,4 +1,7 @@
 
+from random import randint
+from re import search as re_search
+
 from lib.Escape import Escape
 from lib.Lang import DEFAULT_LANG
 from lib.Format import BookFormat
@@ -10,8 +13,9 @@ class BookHeaderError(Exception):
 # 論文・書籍等の文献データ
 class Book:
     __Types = {"note", "paper", "slide", "book", "other"}
-    __Keys = {"type", "title", "related", "alias", "description", "year", "author", "publisher", "ISBN", "DOI", "URL", "last_accessed", "path"}
-    __Keys_Required = {"title", "alias"}
+    __Keys = {"type", "title", "related", "alias", "id", "description", "year", "author", "publisher", "ISBN", "DOI", "URL", "last_accessed", "path"}
+    __Keys_Required = {"title"}
+    __Books_from_id = dict()
 
     def __init__(self, header: dict):
         Book.__Assert_Includes_AllKeysRequired(header)
@@ -28,9 +32,15 @@ class Book:
             self.year = "作成年不明"
         if not self.author is None and self.author.lower() in {"unknown", "不明"}:
             self.author = "著者不明"
+        if self.id is None:
+            self.id = Book.__AutoID()
+        if self.alias is None:
+            self.alias = self.id
         self.__validate_valuetypes()
+        self.__validate_id(self.id)
         Book.__Assert_IsValidType(self.type)
         self.type = BookType.from_str(self.type)
+        Book.__Books_from_id[self.id] = self
     def __str__(self):
         return self.format()
     def format(self, lang: str = DEFAULT_LANG):
@@ -70,6 +80,28 @@ class Book:
                     raise BookHeaderError(f"{key} の型が文字列でも配列でもありません: {val}")
             elif type(val) != str:
                 raise BookHeaderError(f"{key} の型が文字列ではありません: {val})")
+    @staticmethod
+    def __validate_id(ID: str):
+        if re_search("[^\w\d_-]", ID):
+            raise BookHeaderError(f"英数字・アンダーバー・ハイフン以外の文字があります: {ID}")
+        elif ID in Book.__Books_from_id:
+            raise BookHeaderError(f"すでに存在するIDが指定されました: {ID}")
+    @staticmethod
+    def __AutoID():
+        digit = 6 # 
+        maxnum = 10**digit
+        for i in range(maxnum):
+            num = randint(0, maxnum)
+            newid = f"book{num:0{digit}d}"
+            if not newid in Book.__Books_from_id:
+                return newid
+        raise BookHeaderError(f"自動IDの桁数 {digit} をもっと大きくしてください")
+    @staticmethod
+    def FromID(ID: str):
+        if not ID in Book.__Books_from_id:
+            return None
+        else:
+            return Book.__Books_from_id[ID]
     @staticmethod
     def __Assert_Includes_AllKeysRequired(header: dict):
         notinclude = {key for key in Book.__Keys_Required if not key in header}
