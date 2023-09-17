@@ -68,7 +68,6 @@ else:
 Log(f"出力ファイル: {outfilename} (言語: {out_ext})")
 
 filenum = len(yamlfiles)
-books = []
 anything_suceeded = False
 
 Log("\n\n======== START ========\n")
@@ -93,8 +92,7 @@ with Progress(filenum, "yamlload") as prog:
                 try:
                     header = Book.ExtractHeader_FromDict(d)
                     book = Book(header)
-                    books.append(book)
-                    ReadDict(d, book.alias)
+                    ReadDict(d, book.alias, book.id)
                     anything_suceeded = True
                 except WordDataError as e:
                     Log(f"Yamlファイル読み込み失敗\n{e}\n")
@@ -113,6 +111,7 @@ if not anything_suceeded:
 sorted_filename, linenum = MakeSortedFile()
 
 # ソートしたファイルを読み込んでフォーマットして最終ファイルに出力
+books = Book.Books()
 booknum = len(books)
 with Progress(linenum + booknum, "output") as prog, \
      GetOutputFile(outfilename, is_stdout) as outfile:

@@ -18,29 +18,29 @@ def __DictNum(data):
     return nondict_num + sum([__DictNum(data[k]) for k in subdict_keys])
 
 # Yamlファイルを読んで索引語データを逐次出力していく
-def ReadDict(data: dict, book_alias: str):
+def ReadDict(data: dict, book_alias: str, book_id: str):
     n = __DictNum(data)
     if n == 0:
         Log(f"索引語が1つもありません ({book_alias})")
         return
-    with Progress(n, f"ReadDict: {book_alias}") as prog:
-        __ReadDict_proc(prog, data, book_alias, [])
+    with Progress(n, f"ReadDict: {book_alias} ({book_id})") as prog:
+        __ReadDict_proc(prog, data, book_alias, book_id, [])
 
-def __ReadDict_proc(prog, data: dict, book_alias: str, ref: list):
+def __ReadDict_proc(prog, data: dict, book_alias: str, book_id: str, ref: list):
     for k, v in data.items():
         k = str(k)
         new_ref = ref + [k]
         if type(v) == dict:
-            __ReadDict_proc(prog, v, book_alias, new_ref)
+            __ReadDict_proc(prog, v, book_alias, book_id, new_ref)
         elif type(v) == list:
             if len(v) == 0:
                 Log(f"索引語が指定されていません: {k} ({book_alias}[{'/'.join(ref)}])")
             for row in v:
                 try:
                     if type(row) == dict:
-                        __ReadDict_proc(prog, row, book_alias, new_ref)
+                        __ReadDict_proc(prog, row, book_alias, book_id, new_ref)
                     else:
-                        __AppendWord(row, book_alias, new_ref)
+                        __AppendWord(row, book_alias, book_id, new_ref)
                         prog.step()
                 except WordDataError as e:
                     Log(f"Word error at {row}: {e}")
@@ -49,21 +49,21 @@ def __ReadDict_proc(prog, data: dict, book_alias: str, ref: list):
         else:
             Log(f"型が辞書型でもリストでもありません: {v} {type(v)} ({book_alias}[{'/'.join(ref)}])")
 
-def __AppendWord(row, book_alias: str, ref: list):
+def __AppendWord(row, book_alias: str, book_id: str, ref: list):
     if type(row) == str:
-        __AppendWord_str(row, book_alias, ref)
+        __AppendWord_str(row, book_alias, book_id, ref)
     elif type(row) == list:
-        __AppendWord_list(row, book_alias, ref)
+        __AppendWord_list(row, book_alias, book_id, ref)
     else:
         raise WordDataError(f"型が文字列でもリストでもありません: {row}")
 
-def __AppendWord_str(s: str, book_alias: str, ref: list):
+def __AppendWord_str(s: str, book_alias: str, book_id: str, ref: list):
     if len(s.strip()) == 0:
         raise WordDataError(f"空の文字列です ({book_alias}[{'/'.join(ref)}])")
-    word = Word(ToHiragana(s), s, None, ref, None, book_alias)
+    word = Word(ToHiragana(s), s, None, ref, None, book_alias, book_id)
     TmpFiles.write(word)
 
-def __AppendWord_list(l: list, book_alias: str, ref: list):
+def __AppendWord_list(l: list, book_alias: str, book_id: str, ref: list):
     n = len(l)
     if n == 0:
         raise WordDataError(f"空のリストです ({book_alias}[{'/'.join(ref)}])")
@@ -76,11 +76,11 @@ def __AppendWord_list(l: list, book_alias: str, ref: list):
             raise WordDataError(f"説明文(第3の要素)の型が文字列でもリストでもありません: {str(desc)}")
     else:
         desc = None
-    word = Word(comp, disp, None, ref, desc, book_alias)
+    word = Word(comp, disp, None, ref, desc, book_alias, book_id)
     TmpFiles.write(word)
     if n >= 2:
         try:
-            __AppendAliases(disp, l[1], book_alias, ref)
+            __AppendAliases(disp, l[1], book_alias, book_id, ref)
         except WordDataError as e:
             Log(e)
 
@@ -101,7 +101,7 @@ def __DefParts(d):
     else:
         raise WordDataError(f"型が文字列でもリストでもありません: {str(d)} {type(d)}")
 
-def __AppendAliases(orig_disp, aliases, book_alias: str, ref: list):
+def __AppendAliases(orig_disp, aliases, book_alias: str, book_id: str, ref: list):
     if type(aliases) == str:
         aliases = [aliases]
     elif type(aliases) != list:
@@ -109,7 +109,7 @@ def __AppendAliases(orig_disp, aliases, book_alias: str, ref: list):
     for alias in aliases:
         try:
             comp, disp = __DefParts(alias)
-            word = Word(comp, disp, orig_disp, ref, None, book_alias)
+            word = Word(comp, disp, orig_disp, ref, None, book_alias, book_id)
             TmpFiles.write(word)
         except WordDataError as e:
             Log(f"エイリアス {alias} でのエラー {str(e)}")

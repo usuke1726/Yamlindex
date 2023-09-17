@@ -103,6 +103,9 @@ class Book:
         else:
             return Book.__Books_from_id[ID]
     @staticmethod
+    def Books():
+        return list(Book.__Books_from_id.values())
+    @staticmethod
     def __Assert_Includes_AllKeysRequired(header: dict):
         notinclude = {key for key in Book.__Keys_Required if not key in header}
         if len(notinclude) > 0:

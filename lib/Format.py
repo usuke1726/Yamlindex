@@ -113,17 +113,20 @@ def WordFormat_markdown(info):
         title = f"- {info.disp} -> {', '.join(info.aliases)}"
     return title
 
-def __WordFormat_BookAliasAndRef_html(alias: str, ref: list):
+def __WordFormat_BookAliasAndRef_html(alias: str, ref: list, book_id: str):
     refs = '/'.join(ref)
-    return f"{alias}[{refs}]"
+    if book_id is None:
+        return f"{alias}[{refs}]"
+    else:
+        return f"<a class='book-link' href='#{book_id}'>{alias}</a>[{refs}]"
 
 def WordFormat_html(info):
     if info.aliases is None:
-        refs = [__WordFormat_BookAliasAndRef_html(info.book_aliases[i], info.ref[i]) for i in range(len(info.book_aliases))]
+        refs = [__WordFormat_BookAliasAndRef_html(info.book_aliases[i], info.ref[i], info.book_ids[i]) for i in range(len(info.book_aliases))]
         has_desc = not info.desc is None
         classname = 'has_desc' if has_desc else ''
         if has_desc:
-            desc = [f"({__WordFormat_BookAliasAndRef_html(d['book_alias'], d['ref'])}) {d['desc']}" for d in info.desc]
+            desc = [f"({__WordFormat_BookAliasAndRef_html(d['book_alias'], d['ref'], None)}) {d['desc']}" for d in info.desc]
             descs = "\n".join([f"<li>{d}</li>" for d in desc])
             title = f"<li><details><summary>{info.disp} ({', '.join(refs)})</summary><ul>{descs}</ul></details></li>"
         else:

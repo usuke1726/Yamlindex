@@ -55,6 +55,10 @@ summary{{
 summary::after{{ margin-left: 5px; }}
 details:not([open]) summary::after{{ content: '▶'; }}
 details[open] summary::after{{ content: '▼'; }}
+a.book-link{{
+    color: inherit;
+    text-decoration: none;
+}}
 </style>
 </head>
 <body>

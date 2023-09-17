@@ -6,7 +6,7 @@ from lib.Lang import DEFAULT_LANG
 from lib.Format import WordFormat
 
 class Word:
-    def __init__(self, comp: str, disp: str, alias: str, ref: list, desc: list, book_alias: str):
+    def __init__(self, comp: str, disp: str, alias: str, ref: list, desc: list, book_alias: str, book_id: str):
         self.compare_word = comp.upper().strip()
         self.display_word = disp.strip()
         if alias is None:
@@ -26,6 +26,7 @@ class Word:
                 'ref': ref
             }) for d in desc]
         self.book_aliases = [book_alias]
+        self.book_ids = [book_id]
     def head(self):
         return self.compare_word[0]
     def __str__(self):
@@ -39,14 +40,15 @@ class Word:
             'aliases': self.aliases,
             'ref': self.ref,
             'description': self.description,
-            'book_aliases': self.book_aliases
+            'book_aliases': self.book_aliases,
+            'book_ids': self.book_ids
         }
         return json.dumps(data, ensure_ascii = True, sort_keys = False, separators = (',', ':'))
     @staticmethod
     def from_str(s: str):
         data = json.loads(s)
-        word = Word(data['comp'], data['disp'], None, None, None, None)
-        for key in {'aliases', 'ref', 'book_aliases', 'description'}:
+        word = Word(data['comp'], data['disp'], None, None, None, None, None)
+        for key in {'aliases', 'ref', 'book_aliases', 'book_ids', 'description'}:
             setattr(word, key, data[key])
         return word
     def format(self, lang: str = DEFAULT_LANG):
@@ -72,16 +74,18 @@ class Word:
                 for d in [json.loads(d) for d in desc]
             ]
         class Info:
-            def __init__(self, disp, aliases, book_aliases, ref, desc):
+            def __init__(self, disp, aliases, book_aliases, book_ids, ref, desc):
                 self.disp = disp
                 self.aliases = aliases
                 self.book_aliases = book_aliases
+                self.book_ids = book_ids
                 self.ref = ref
                 self.desc = desc
         info = Info(
             e(self.display_word),
             e(self.aliases),
             e(self.book_aliases),
+            e(self.book_ids),
             e(self.ref),
             escape_description(self.description)
         )
@@ -103,6 +107,7 @@ class Word:
             self.aliases = list(set(self.aliases).union(set(other.aliases)))
         self.ref.extend(other.ref)
         self.book_aliases.extend(other.book_aliases)
+        self.book_ids.extend(other.book_ids)
         if self.description is None:
             if not other.description is None:
                 self.description = other.description.copy()
