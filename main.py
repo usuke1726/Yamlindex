@@ -1,6 +1,7 @@
 
 import sys
 import argparse
+import traceback
 
 # __pycache__ が作成されないようにする(パフォーマンスが気になるならコメントアウトしてもよい)
 sys.dont_write_bytecode = True
@@ -102,6 +103,7 @@ with Progress(filenum, "yamlload") as prog:
                     Log(f"ヘッダーエラー\n{e}")
                 except Exception as e:
                     Log(f"エラー\n{e}\n")
+                    Log(''.join(traceback.format_tb(e.__traceback__)))
                 finally:
                     prog2.step()
         prog.step()
