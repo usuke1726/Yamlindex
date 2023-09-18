@@ -82,8 +82,11 @@ class Book:
                 raise BookHeaderError(f"{key} の型が文字列ではありません: {val})")
     @staticmethod
     def __validate_id(ID: str):
+        reserved_words = {"word", "book", "ref", "visibility", "hidden", "off", "material-symbols-outlined"}
         if re_search("[^\w\d_-]", ID):
             raise BookHeaderError(f"英数字・アンダーバー・ハイフン以外の文字があります: {ID}")
+        elif ID in reserved_words:
+            raise BookHeaderError(f"ID {ID} は予約されているので使用できません")
         elif ID in Book.__Books_from_id:
             raise BookHeaderError(f"すでに存在するIDが指定されました: {ID}")
     @staticmethod

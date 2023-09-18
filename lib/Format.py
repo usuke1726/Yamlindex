@@ -83,11 +83,12 @@ def BookFormat_html(info):
         added.append(f"\n\t<li>DOI: {info.DOI}</li>")
     if info.type == BookType.website and not info.last_accessed is None:
         added.append(f"\n\t<li>最終アクセス: {info.last_accessed}</li>")
-    attributes = f"id='{info.id}'"
+    attributes = f"class='book' id='{info.id}'"
+    visibility_icon = "<span class='visibility material-symbols-outlined'>visibility</span>"
     if len(added) > 0:
-        return f"<li {attributes}>{title}\n\t<ul>{''.join(added)}\n\t</ul></li>"
+        return f"<li {attributes}>{visibility_icon}{title}\n\t<ul>{''.join(added)}\n\t</ul></li>"
     else:
-        return f"<li {attributes}>{title}</li>"
+        return f"<li {attributes}>{visibility_icon}{title}</li>"
 
 def BookFormat(lang: str = DEFAULT_LANG):
     funcs = {
@@ -118,7 +119,7 @@ def __WordFormat_BookAliasAndRef_html(alias: str, ref: list, book_id: str):
     if book_id is None:
         return f"{alias}[{refs}]"
     else:
-        return f"<a class='book-link' href='#{book_id}'>{alias}</a>[{refs}]"
+        return f"<span class='ref {book_id}'><a class='book-link' href='#{book_id}'>{alias}</a>[{refs}]</span>"
 
 def WordFormat_html(info):
     if info.aliases is None:
@@ -128,12 +129,13 @@ def WordFormat_html(info):
         if has_desc:
             desc = [f"({__WordFormat_BookAliasAndRef_html(d['book_alias'], d['ref'], None)}) {d['desc']}" for d in info.desc]
             descs = "\n".join([f"<li>{d}</li>" for d in desc])
-            title = f"<li><details><summary>{info.disp} ({', '.join(refs)})</summary><ul>{descs}</ul></details></li>"
+            body = f"<details><summary>{info.disp} ({', '.join(refs)})</summary><ul>{descs}</ul></details>"
         else:
-            title = f"<li>{info.disp} ({', '.join(refs)})</li>"
+            body = f"{info.disp} ({', '.join(refs)})"
     else:
-        title = f"<li>{info.disp} -&gt; {', '.join(info.aliases)}</li>"
-    return title
+        body = f"{info.disp} -&gt; {', '.join(info.aliases)}"
+    body = f"<li class='word {' '.join(info.book_ids)}'>{body}</li>"
+    return body
 
 def WordFormat(lang: str = DEFAULT_LANG):
     funcs = {
