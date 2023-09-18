@@ -89,6 +89,8 @@ with Progress(filenum, "yamlload") as prog:
             continue
         with Progress(book_num, "yamlload-onebook") as prog2:
             for d in data:
+                if d is None:
+                    continue
                 try:
                     header = Book.ExtractHeader_FromDict(d)
                     book = Book(header)
