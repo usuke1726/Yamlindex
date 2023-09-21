@@ -3,6 +3,8 @@ from textwrap import dedent
 from lib.Lang import Lang, DEFAULT_LANG
 from lib.TeXMacro import HTML_TeXMacros
 
+HTML_BIB_ID = "bib"
+
 __Headers = {
     Lang.md: {
         "top": "\n\n## 索引\n\n\n",
@@ -154,7 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {{
 <ul style="display: none">
         """,
         "headchar": "\n</ul>\n\n<h3 id='{id}'>{char}</h3>\n<ul>\n\n",
-        "books": "\n</ul>\n<h2 id='bib'>文献一覧</h2>\n<ul>\n\n",
+        "books": f"\n</ul>\n<h2 id='{HTML_BIB_ID}'>文献一覧</h2>\n<ul>\n\n",
         "bottom": """
             </ul>
             </body>
@@ -188,17 +190,17 @@ def PrintFooter(f, lang: str = DEFAULT_LANG):
 # セクション見出しを適切なタイミングで出力していく静的クラス
 class HeadChar:
     __chars = [
-        # [表示文字列, 比較文字]
-        ["記号・数式", "$"],
-        ["数字", "0"]
+        # [表示文字列, 比較文字, HTML用ID]
+        ["記号・数式", "$", "$"],
+        ["数字", "0", "0"]
     ] + [
-        [chr(i), chr(i)] for i in range(65, 91) # 大文字英字
+        [chr(i), chr(i), chr(i)] for i in range(65, 91) # 大文字英字
     ] + [
-        ["あ", "ぁ"]
+        ["あ", "ぁ", "あ"]
     ] + [
-        [c, c] for c in "かさたなはま"
+        [c, c, c] for c in "かさたなはま"
     ] + [
-        ["や", "ゃ"], ["ら", "ら"], ["わ", "ゎ"]
+        ["や", "ゃ", "や"], ["ら", "ら", "ら"], ["わ", "ゎ", "わ"]
     ]
     __next_idx = 0
     @staticmethod
@@ -206,9 +208,12 @@ class HeadChar:
         i = HeadChar.__next_idx
         if i >= len(HeadChar.__chars):
             return
-        newlabel, newchar = HeadChar.__chars[i]
+        newlabel, newchar, newid = HeadChar.__chars[i]
         if i == 0 or newchar <= word.head():
-            outfile.write(RemoveIndent(HeadersFromLang(lang)['headchar']).format(char = newlabel, id = newchar))
+            outfile.write(RemoveIndent(HeadersFromLang(lang)['headchar']).format(char = newlabel, id = newid))
             HeadChar.__next_idx += 1
             HeadChar.apply(outfile, word, lang)
+    @staticmethod
+    def getIDs():
+        return [c[2] for c in HeadChar.__chars]
 

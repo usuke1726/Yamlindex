@@ -7,6 +7,7 @@ from lib.Lang import DEFAULT_LANG
 from lib.Format import BookFormat
 from lib.BookType import BookType
 from lib.Log import Log
+from lib.Header import HeadChar, HTML_BIB_ID
 
 class BookHeaderError(Exception):
     pass
@@ -85,7 +86,9 @@ class Book:
                 raise BookHeaderError(f"{key} の型が文字列ではありません: {val})")
     @staticmethod
     def __validate_id(ID: str):
-        reserved_words = {"word", "book", "ref", "visibility", "hidden", "off", "material-symbols-outlined"}
+        reserved_words = {"word", "book", "ref", "visibility", "hidden", "off", "material-symbols-outlined"}.union(
+            {HTML_BIB_ID}, set(HeadChar.getIDs())
+        )
         if re_search("[^\w\d_-]", ID):
             raise BookHeaderError(f"英数字・アンダーバー・ハイフン以外の文字があります: {ID}")
         elif ID in reserved_words:
