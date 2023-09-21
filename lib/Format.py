@@ -121,7 +121,11 @@ def __WordFormat_BookAliasAndRef_html(alias: str, ref: list, book_id: str):
     if ref is None:
         refs = ""
     else:
-        refs = f"[{'/'.join(ref)}]"
+        valid_ref = [r for r in ref if len(r.strip()) > 0]
+        if len(valid_ref) > 0:
+            refs = f"[{'/'.join(valid_ref)}]"
+        else:
+            refs = ""
     if book_id is None:
         return f"{alias}{refs}"
     else:
