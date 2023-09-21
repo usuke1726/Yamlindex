@@ -10,6 +10,7 @@ from lib.OutFile import GetOutputFilePath, GetOutputFile, GetExtension
 from lib.YamlFileList import GetYamlFiles
 from lib.Hiragana import ToHiragana
 from lib.ReadDict import ReadDict, WordDataError
+from lib.ReadWords import ReadWords
 from lib.Log import Log, Progress
 from lib.Lang import Lang, DEFAULT_LANG
 from lib.Book import Book, BookHeaderError
@@ -75,6 +76,7 @@ Log("\n\n======== START ========\n")
 
 # 索引語データを読み込んで一時ファイルに出力
 with Progress(filenum, "yamlload") as prog:
+    words_buffer = []
     for i in range(filenum):
         try:
             filename = yamlfiles[i]
@@ -91,6 +93,9 @@ with Progress(filenum, "yamlload") as prog:
         with Progress(book_num, "yamlload-onebook") as prog2:
             for d in data:
                 try:
+                    if "type" in d and d["type"] in {"word", "words"}:
+                        words_buffer.append([filename, d])
+                        continue
                     header = Book.ExtractHeader_FromDict(d)
                     book = Book(header)
                     ReadDict(d, book.alias, book.id)
@@ -105,6 +110,16 @@ with Progress(filenum, "yamlload") as prog:
                 finally:
                     prog2.step()
         prog.step()
+    for words in words_buffer:
+        try:
+            Log(f"** Words from {words[0]} **")
+            result = ReadWords(words[1])
+            anything_suceeded = result or anything_suceeded
+        except WordDataError as e:
+            Log(f"Yamlファイル読み込み失敗\n{e}\n")
+        except Exception as e:
+            Log(f"エラー\n{e}\n")
+            Log(''.join(traceback.format_tb(e.__traceback__)))
 
 if not anything_suceeded:
     Log(f"どのYamlファイルも読み込みに失敗したので終了します")

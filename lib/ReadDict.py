@@ -67,7 +67,7 @@ def __AppendWord_list(l: list, book_alias: str, book_id: str, ref: list):
     n = len(l)
     if n == 0:
         raise WordDataError(f"空のリストです ({book_alias}[{'/'.join(ref)}])")
-    comp, disp = __DefParts(l[0])
+    comp, disp = DefParts(l[0])
     if n >= 3:
         desc = l[2]
         if type(desc) == str:
@@ -85,7 +85,7 @@ def __AppendWord_list(l: list, book_alias: str, book_id: str, ref: list):
             Log(e)
 
 # 索引語(あるいはエイリアス)の定義部分(比較用文字列と表示用文字列)を返す
-def __DefParts(d):
+def DefParts(d):
     if type(d) == str:
         return ToHiragana(d), d
     elif type(d) == list:
@@ -108,7 +108,7 @@ def __AppendAliases(orig_disp, aliases, book_alias: str, book_id: str, ref: list
         raise WordDataError(f"エイリアスの型が文字列でもリストでもありません: {aliases}")
     for alias in aliases:
         try:
-            comp, disp = __DefParts(alias)
+            comp, disp = DefParts(alias)
             word = Word(comp, disp, orig_disp, ref, None, book_alias, book_id)
             TmpFiles.write(word)
         except WordDataError as e:

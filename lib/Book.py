@@ -6,6 +6,7 @@ from lib.Escape import Escape
 from lib.Lang import DEFAULT_LANG
 from lib.Format import BookFormat
 from lib.BookType import BookType
+from lib.Log import Log
 
 class BookHeaderError(Exception):
     pass
@@ -102,6 +103,7 @@ class Book:
     @staticmethod
     def FromID(ID: str):
         if not ID in Book.__Books_from_id:
+            Log(f"存在しない文献IDです: {ID}")
             return None
         else:
             return Book.__Books_from_id[ID]

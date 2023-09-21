@@ -14,7 +14,7 @@ class Word:
         else:
             self.aliases = [alias]
         if ref is None:
-            self.ref = []
+            self.ref = [None]
         else:
             self.ref = [ref.copy()]
         if desc is None:
@@ -26,7 +26,10 @@ class Word:
                 'ref': ref
             }) for d in desc]
         self.book_aliases = [book_alias]
-        self.book_ids = [book_id]
+        if book_id is None:
+            self.book_ids = []
+        else:
+            self.book_ids = [book_id]
     def head(self):
         return self.compare_word[0]
     def __str__(self):

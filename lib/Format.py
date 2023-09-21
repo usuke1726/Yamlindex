@@ -99,8 +99,11 @@ def BookFormat(lang: str = DEFAULT_LANG):
 
 
 def __WordFormat_BookAliasAndRef_markdown(alias: str, ref: list):
-    refs = '/'.join(ref)
-    return f"{alias}\\[{refs}\\]"
+    if ref is None:
+        refs = ""
+    else:
+        refs = f"\\[{'/'.join(ref)}\\]"
+    return f"{alias}{refs}"
 
 def WordFormat_markdown(info):
     if info.aliases is None:
@@ -115,16 +118,19 @@ def WordFormat_markdown(info):
     return title
 
 def __WordFormat_BookAliasAndRef_html(alias: str, ref: list, book_id: str):
-    refs = '/'.join(ref)
-    if book_id is None:
-        return f"{alias}[{refs}]"
+    if ref is None:
+        refs = ""
     else:
-        return f"<span class='ref {book_id}'><a class='book-link' href='#{book_id}'>{alias}</a>[{refs}]</span>"
+        refs = f"[{'/'.join(ref)}]"
+    if book_id is None:
+        return f"{alias}{refs}"
+    else:
+        return f"<span class='ref {book_id}'><a class='book-link' href='#{book_id}'>{alias}</a>{refs}</span>"
 
 def WordFormat_html(info):
     if info.aliases is None:
         refs = [__WordFormat_BookAliasAndRef_html(info.book_aliases[i], info.ref[i], info.book_ids[i]) for i in range(len(info.book_aliases))]
-        has_desc = not info.desc is None
+        has_desc = not info.desc is None and len(info.desc) > 0
         classname = 'has_desc' if has_desc else ''
         if has_desc:
             desc = [f"({__WordFormat_BookAliasAndRef_html(d['book_alias'], d['ref'], None)}) {d['desc']}" for d in info.desc]
