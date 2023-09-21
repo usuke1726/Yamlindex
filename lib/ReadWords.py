@@ -10,12 +10,11 @@ def __ReadWord(word: dict):
     __ValidateWordFormat(word)
     body = word["body"]
     comp, disp = DefParts(body[0])
-    desc = word["description"]
     books = [ref for ref in [__RefToBookInfo(ref) for ref in word["ref"]] if not ref is None]
     if len(books) == 0:
         raise WordDataError("有効な文献が指定されていません")
     for book in books:
-        word = Word(comp, disp, None, book["ref"], desc, book["alias"], book["id"])
+        word = Word(comp, disp, None, book["ref"], book["desc"], book["alias"], book["id"])
         TmpFiles.write(word)
     if len(body) >= 2:
         try:
@@ -43,9 +42,7 @@ def __ValidateWordFormat(word: dict):
         raise WordDataError(f"body プロパティが指定されていません: {word}")
     if not "ref" in word:
         raise WordDataError(f"ref プロパティが指定されていません: {word}")
-    if not "description" in word:
-        word["description"] = []
-    for key in {"body", "ref", "description"}:
+    for key in {"body", "ref"}:
         if type(word[key]) == str:
             word[key] = [word[key]]
         elif type(word[key]) != list:
@@ -54,22 +51,38 @@ def __ValidateWordFormat(word: dict):
         raise WordDataError(f"bodyプロパティが空のリストです: {word}")
 
 def __RefToBookInfo(ref):
+    desc = None
+    book_ref = None
     if type(ref) == str:
         book = Book.FromID(ref)
-        book_ref = None
     elif type(ref) == list:
         if len(ref) >= 2:
             book = Book.FromID(ref[0])
-            book_ref = [str(ref[1])]
+            book_ref = ref[1]
+            if type(book_ref) == list:
+                if len(book_ref) > 0:
+                    book_ref = [str(r) for r in book_ref]
+                else:
+                    book_ref = None
+            elif not book_ref is None:
+                book_ref = [str(book_ref)]
+            if len(ref) >= 3:
+                desc = ref[2]
+                if type(desc) == list:
+                    if len(desc) > 0:
+                        desc = [str(d) for d in desc]
+                    else:
+                        desc = None
+                elif not desc is None:
+                    desc = [str(desc)]
         elif len(ref) == 1:
             book = Book.FromID(ref[0])
-            book_ref = None
         else:
             return None
     if book is None:
         return None
     else:
-        return {"id": book.id, "alias": book.alias, "ref": book_ref}
+        return {"id": book.id, "alias": book.alias, "ref": book_ref, "desc": desc}
 
 def ReadWords(data: dict) -> bool:
     word_added = False
