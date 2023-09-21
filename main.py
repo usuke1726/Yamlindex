@@ -37,7 +37,7 @@ parser.add_argument('-v', '--version', action = "store_true", help = "バージ�
 parser.add_argument('--stdout', action = "store_true", help = "実行結果をファイル出力ではなく標準出力する")
 parser.add_argument('-l', '--lang', type = str, help = "出力ファイルの拡張子を指定する", default = None)
 
-parser.add_argument('--hiragana', '--hurigana', type = str, help = "ひらがなへの変換結果を表示", default = None)
+parser.add_argument('--hiragana', '--hurigana', '--ruby', type = str, help = "ひらがなへの変換結果を表示", default = None)
 
 args = parser.parse_args()
 
