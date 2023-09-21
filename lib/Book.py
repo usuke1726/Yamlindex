@@ -44,6 +44,8 @@ class Book:
         Book.__Books_from_id[self.id] = self
     def __str__(self):
         return self.format()
+    def __lt__(self, other):
+        return self.id < other.id
     def format(self, lang: str = DEFAULT_LANG):
         escape = Escape(lang)
         def e(v, onlyInlineMath: bool = True):
@@ -109,7 +111,7 @@ class Book:
             return Book.__Books_from_id[ID]
     @staticmethod
     def Books():
-        return list(Book.__Books_from_id.values())
+        return sorted(list(Book.__Books_from_id.values()))
     @staticmethod
     def __Assert_Includes_AllKeysRequired(header: dict):
         notinclude = {key for key in Book.__Keys_Required if not key in header}
