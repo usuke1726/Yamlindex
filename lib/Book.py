@@ -139,6 +139,8 @@ class Book:
             if key in data:
                 out[key] = data[key]
                 del data[key]
+        if "comment" in data:
+            del data["comment"]
         return out
 
 

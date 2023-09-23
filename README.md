@@ -63,6 +63,7 @@
 |`URL`|`str`|URL|
 |`last_accessed`|`str`\|`int`|最終アクセス日時|
 |`path`|`str`\|`list[str]`|ファイルパス|
+|`comment`|任意|コメント|
 
 #### 文献タイプの別名
 
