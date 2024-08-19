@@ -61,7 +61,7 @@ details[open] summary::after{{ content: '▼'; }}
 li.word.hidden{{
     display: none;
 }}
-li.word a.book-link{{
+li.word a:is(.book-link, .word-alias){{
     color: inherit;
     text-decoration: none;
 }}

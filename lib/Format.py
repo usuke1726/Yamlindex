@@ -2,6 +2,7 @@
 from lib.Escape import Escape
 from lib.Lang import Lang, DEFAULT_LANG
 from lib.BookType import BookType
+from hashlib import sha256
 
 def BookFormat_markdown(info):
     if info.URL is None:
@@ -131,6 +132,11 @@ def __WordFormat_BookAliasAndRef_html(alias: str, ref: list, book_id: str):
     else:
         return f"<span class='ref {book_id}'><a class='book-link' href='#{book_id}'>{alias}</a>{refs}</span>"
 
+def _DispToRefID(disp: str):
+    return f"word-{sha256(disp.encode()).hexdigest()}"
+def _AliasToLink(alias: str):
+    return f"<a class='word-alias' href='#{_DispToRefID(alias)}'>{alias}</a>"
+
 def WordFormat_html(info):
     if info.aliases is None:
         refs = [__WordFormat_BookAliasAndRef_html(info.book_aliases[i], info.ref[i], info.book_ids[i]) for i in range(len(info.book_aliases))]
@@ -143,8 +149,8 @@ def WordFormat_html(info):
         else:
             body = f"{info.disp} ({', '.join(refs)})"
     else:
-        body = f"{info.disp} -&gt; {', '.join(info.aliases)}"
-    body = f"<li class='word {' '.join(info.book_ids)}'>{body}</li>"
+        body = f"{info.disp} -&gt; {', '.join([_AliasToLink(a) for a in info.aliases])}"
+    body = f"<li id='{_DispToRefID(info.disp)}' class='word {' '.join(info.book_ids)}'>{body}</li>"
     return body
 
 def WordFormat(lang: str = DEFAULT_LANG):
