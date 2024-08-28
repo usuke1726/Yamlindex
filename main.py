@@ -98,7 +98,7 @@ with Progress(filenum, "yamlload") as prog:
                         continue
                     header = Book.ExtractHeader_FromDict(d)
                     book = Book(header)
-                    ReadDict(d, book.alias, book.id)
+                    ReadDict(d, book.alias, book.id, book.prefix)
                     anything_suceeded = True
                 except WordDataError as e:
                     Log(f"Yamlファイル読み込み失敗\n{e}\n")

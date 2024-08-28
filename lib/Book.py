@@ -15,7 +15,7 @@ class BookHeaderError(Exception):
 # 論文・書籍等の文献データ
 class Book:
     __Types = {"note", "paper", "slide", "book", "other"}
-    __Keys = {"type", "title", "related", "alias", "id", "description", "year", "author", "publisher", "ISBN", "DOI", "URL", "last_accessed", "path"}
+    __Keys = {"type", "title", "related", "alias", "id", "description", "year", "author", "publisher", "ISBN", "DOI", "URL", "last_accessed", "path", "prefix"}
     __Keys_Required = {"title"}
     __Books_from_id = dict()
 
@@ -38,6 +38,9 @@ class Book:
             self.id = Book.__AutoID()
         if self.alias is None:
             self.alias = self.id
+        if self.prefix is None:
+            self.prefix = ""
+        self.prefix = str(self.prefix)
         self.__validate_valuetypes()
         self.__validate_id(self.id)
         Book.__Assert_IsValidType(self.type)
